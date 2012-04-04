@@ -1,0 +1,5 @@
+<tal:block tal:define="v options/fieldvalue">
+        <tal:block1 tal:condition="v">
+            <span tal:content="python:v.strftime('%d/%m/%Y')" />
+        </tal:block1>
+</tal:block>

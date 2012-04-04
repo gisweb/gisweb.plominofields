@@ -1,0 +1,21 @@
+<tal:block tal:define="
+                v options/fieldvalue;
+                name options/fieldname;
+                mapset python:options['field'].getSettings('mapset');
+                service python:options['field'].getSettings('service');
+		        h python:options['field'].getSettings('height');
+		        w python:options['field'].getSettings('width');
+                point python:options['field'].getSettings('point');
+                line python:options['field'].getSettings('line');
+                polygon python:options['field'].getSettings('polygon');
+                prm python:'&'.join(options['field'].getSettings('mappaprm'));
+                srcUrl python:service+'?mapset='+mapset+'&fieldname='+name+'&edit=1&point='+str(int(point))+'&line='+str(int(line))+'&polygon='+str(int(polygon))+'&'+prm;
+">
+    <tal:block1 tal:condition="v">
+       <input type="hidden" tal:attributes="name options/fieldname;id options/fieldname;value python:str(v).replace('\'',chr(34))" />         
+    </tal:block1>
+    <tal:block1 tal:condition="not:v">
+        <input type="hidden" tal:attributes="name options/fieldname;id options/fieldname" /> 
+    </tal:block1>
+    <iframe tal:attributes="id string:gc-mappanel-${name};src srcUrl; width w; height h"></iframe>
+</tal:block>

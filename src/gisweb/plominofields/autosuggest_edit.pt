@@ -1,0 +1,41 @@
+<span tal:define="size python:options['field'].getSettings('size');
+                  service python:options['field'].getSettings('service');
+                  id options/fieldname;
+                  m python:options['field'].getSettings('minlength');
+                  params python:options['field'].getSettings('fields');
+                  fnselect python:options['field'].getSettings('selectEvent');">
+		<input type="text" tal:attributes="id options/fieldname;name options/fieldname; value options/fieldvalue; size size" autocomplete="off"/>
+                <script type="text/javascript" charset="utf-8"
+                    tal:content="structure string: var data_${id}=new Object(); 
+    jq('#${id}').autocomplete({
+        source: function( request, response ) {
+            data_${id}['term'] = request.term;
+            data_${id}['field'] = '${id}';
+            jq.ajax({
+                url:'${service}',
+                dataType:'json',
+                type:'POST',
+                data:data_${id},
+                success:response
+            });
+            
+        },
+        select:function(event,ui){
+            ${fnselect}
+        },
+        search: function(event,ui){
+            var flds='${params}'.split(',');
+            if (jq.isArray(flds)){
+                jq.each(flds,function(i,k){
+                    var v=jq('[name=\''+k+'\']').val();
+                    if (v){
+                        data_${id}[k]=v;
+                    }
+                });
+            }
+        },
+        minLength:${m}
+    });"
+                />
+
+</span>
