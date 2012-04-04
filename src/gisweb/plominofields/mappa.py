@@ -14,18 +14,15 @@ __docformat__ = 'plaintext'
 from zope.formlib import form
 from zope.interface import implements
 from zope.schema import getFields
-from zope.schema import TextLine, Text, List, Bool
-from zope.schema.vocabulary import SimpleVocabulary
+from zope.schema import TextLine, List, Bool
 from zope import component
-from dictionaryproperty import DictionaryProperty
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
-from z3c.form.browser import checkbox
 import simplejson as json
 
 from Products.CMFPlomino.interfaces import IPlominoField
 from Products.CMFPlomino.fields.dictionaryproperty import DictionaryProperty
 
-from base import IBaseField, BaseField, BaseForm
+from Products.CMFPlomino.fields.base import IBaseField, BaseField, BaseForm
 
 
 class IMappaField(IBaseField):
@@ -138,6 +135,7 @@ class MappaField(BaseField):
 
         if mode=="EDITABLE":
             if doc is None and not(creation) and request is not None:
+                fieldName = self.context.id
                 fieldValue = request.get(fieldName, '')
                 #if not(fieldValue=='' or fieldValue is None):
                     #fieldValue = self.tojson(fieldvalue)

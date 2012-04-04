@@ -13,12 +13,11 @@ __docformat__ = 'plaintext'
 from zope.formlib import form
 from zope.interface import implements
 from zope.schema import getFields
-from zope.schema import TextLine, Text, Choice
-from zope.schema.vocabulary import SimpleVocabulary
+from zope.schema import TextLine, Text
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
-from dictionaryproperty import DictionaryProperty
+from Products.CMFPlomino.fields.dictionaryproperty import DictionaryProperty
 from zope import component
-from base import IBaseField, BaseField, BaseForm
+from Products.CMFPlomino.fields.base import IBaseField, BaseField, BaseForm
 from Products.CMFPlomino.interfaces import IPlominoField
 
 class IAutoSuggestField(IBaseField):
