@@ -1,13 +1,10 @@
 "Monkey patch PlominoForm"
 from Products.CMFPlomino.PlominoForm import PlominoForm
 
-import ipdb; ipdb.set_trace()
-
 def readInputs(self, doc, REQUEST, process_attachments=False, applyhidewhen=True):
     """ read submitted values in REQUEST and store them in document according
     fields definition
     """
-    import ipdb; ipdb.set_trace()
     all_fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=False)
     # if applyhidewhen:
     #     displayed_fields = self.getFormFields(includesubforms=True, doc=doc, applyhidewhen=True)
