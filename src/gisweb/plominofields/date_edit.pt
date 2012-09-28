@@ -1,8 +1,15 @@
 <tal:block tal:define="v options/fieldvalue;id options/fieldname;">
     <tal:block1 tal:condition="v">
         <input type="text" tal:attributes="name id;id id;value python:v.strftime('%d/%m/%Y')" />
-        <script type="text/javascript" charset="utf-8"
+        
+    </tal:block1>
+    <tal:block1 tal:condition="not: v">
+        <input type="text" tal:attributes="name id;id id;" /> 
+        
+    </tal:block1>
+    <script type="text/javascript" charset="utf-8"
                  tal:content="structure string:jq(document).ready(function() {
+                     jq.datepicker.setDefaults(jq.datepicker.regional['it']);
                      jq( '#${id}' ).datepicker({
                          changeMonth: true,
                          changeYear: true,
@@ -13,20 +20,5 @@
                       });
                   });">
          </script>
-    </tal:block1>
-    <tal:block1 tal:condition="not: v">
-        <input type="text" tal:attributes="name id;id id;" /> 
-        <script type="text/javascript" charset="utf-8"
-             tal:content="structure string:jq(document).ready(function() {
-                 jq( '#${id}' ).datepicker({
-                     changeMonth: true,
-                     changeYear: true,
-                     showOn: 'button',
-                     buttonImage: 'popup_calendar.gif',
-                     buttonImageOnly: true,
-                     dateFormat: 'dd/mm/yy' 
-                 });
-             });">
-         </script>
-    </tal:block1>
 </tal:block>
+
