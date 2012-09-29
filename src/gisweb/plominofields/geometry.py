@@ -58,7 +58,7 @@ def CreateGeometryFromGoogleText(string, srid=4326):
     
         inner_geom = ogr.Geometry(ogr.wkbLinearRing)
         for x, y in [map(float, coords.split(' ')) for coords in points]:
-            the_geom.AddPoint_2D(x, y)
+            inner_geom.AddPoint_2D(x, y)
         the_geom = ogr.Geometry(ogr.wkbPolygon)
         the_geom.AddGeometry(inner_geom)
     
