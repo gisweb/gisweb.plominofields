@@ -1,13 +1,13 @@
 "Monkey patch PlominoForm"
 from Products.CMFPlomino.PlominoForm import PlominoForm
-from Products.CMFPlomino.PlominoForm import PlominoView
+from Products.CMFPlomino.PlominoView import PlominoView
 
 from AccessControl import ClassSecurityInfo
 from Globals import InitializeClass
 from Products.CMFPlomino.config import READ_PERMISSION
 
 PlominoIndex.security = ClassSecurityInfo()
-#PlominoIndex.security.declareProtected(READ_PERMISSION, 'search_json')
+PlominoIndex.security.declareProtected(READ_PERMISSION, 'search_json')
 PlominoIndex.security.declareProtected(READ_PERMISSION, 'search_documents')
 InitializeClass(PlominoIndex)
 
@@ -77,11 +77,6 @@ def search_documents(self, start=1, limit=None, only_allowed=True,
 
 def search_json(self, REQUEST=None, query_request={}):
     """ Returns a JSON representation of view filtered data
-    REQUEST:
-        iDisplayStart, opz
-        iDisplayLength, opz
-        sSearch, opz
-        
     """
     data = []
     categorized = self.getCategorized()
