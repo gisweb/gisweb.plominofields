@@ -2,7 +2,7 @@
 from Products.CMFPlomino.PlominoForm import PlominoForm
 from Products.CMFPlomino.PlominoView import PlominoView
 
-from Products.CMFPlomino.index importPlominoIndex
+from Products.CMFPlomino.index import PlominoIndex
 from AccessControl import ClassSecurityInfo
 from Globals import InitializeClass
 from Products.CMFPlomino.config import READ_PERMISSION
