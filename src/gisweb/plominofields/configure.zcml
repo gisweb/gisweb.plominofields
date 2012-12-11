@@ -35,4 +35,15 @@
         class=".autosuggest.SettingForm"
         permission="plomino.DESIGN_PERMISSION"
         />
+   <adapter
+        for="Products.CMFPlomino.interfaces.IPlominoField"
+        provides=".jstext.IJSTextField"
+        factory=".jstext.JSTextField"
+        />
+   <browser:page
+        name="jstextsettings"
+        for="Products.CMFPlomino.interfaces.IPlominoField"
+        class=".jstext.SettingForm"
+        permission="plomino.DESIGN_PERMISSION"
+        />
 </configure>
