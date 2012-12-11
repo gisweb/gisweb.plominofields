@@ -35,15 +35,4 @@
         class=".autosuggest.SettingForm"
         permission="plomino.DESIGN_PERMISSION"
         />
-    <adapter
-        for="Products.CMFPlomino.interfaces.IPlominoField"
-        provides=".geometry.IGeometryField"
-        factory=".geometry.GeometryField"
-        />
-   <browser:page
-        name="geometrysettings"
-        for="Products.CMFPlomino.interfaces.IPlominoField"
-        class=".geometry.SettingForm"
-        permission="plomino.DESIGN_PERMISSION"
-        />
 </configure>

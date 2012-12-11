@@ -1,4 +1,7 @@
 "Monkey patch PlominoForm"
+from Products.CMFPlomino.PlominoUtils import asUnicode, asList
+from jsonutil import jsonutil as json
+
 from Products.CMFPlomino.PlominoForm import PlominoForm
 from Products.CMFPlomino.PlominoView import PlominoView
 
@@ -10,7 +13,7 @@ from Products.CMFPlomino.config import READ_PERMISSION
 PlominoIndex.security = ClassSecurityInfo()
 PlominoIndex.security.declareProtected(READ_PERMISSION, 'search_json')
 PlominoIndex.security.declareProtected(READ_PERMISSION, 'search_documents')
-InitializeClass(PlominoIndex)
+InitializeClass(PlominoView)
 
 # NEW VERSION 1.13.3
 def readInputs(self, doc, REQUEST, process_attachments=False, applyhidewhen=True):
@@ -60,6 +63,8 @@ def search_documents(self, start=1, limit=None, only_allowed=True,
     if not reverse:
         reverse = self.getReverseSorting()
     query = {'PlominoViewFormula_'+self.getViewName() : True}
+    if isinstance(query_request, basestring):
+        query_request = json.loads(query_request)
     query.update(query_request)
     
     if fulltext_query:
@@ -85,6 +90,7 @@ def search_json(self, REQUEST=None, query_request={}):
     limit = -1
     search = None
     sort_index = None
+    reverse = 1
     if REQUEST:
         start = int(REQUEST.get('iDisplayStart', 1))
         iDisplayLength = REQUEST.get('iDisplayLength', None)
