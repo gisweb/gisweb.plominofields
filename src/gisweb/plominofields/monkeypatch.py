@@ -163,7 +163,7 @@ def search_json(self, REQUEST=None):
         'sSortDir',
         'iSortingCols',
         'bSortable',
-    )]))
+    )])])
 
     results = self.search_documents(start=start,
                                    limit=limit,
