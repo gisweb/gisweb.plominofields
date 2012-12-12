@@ -47,6 +47,45 @@ def readInputs(self, doc, REQUEST, process_attachments=False, applyhidewhen=True
 
 PlominoForm.readInputs = readInputs
 
+# elenco degli opratori supportati in formato chiave, etichetta
+op_match = {
+    'gt':'Maggiore di',
+    'lt':'Minore di',
+    'and': 'AND',
+)
+
+def query_layer(pdb, json):
+    """
+    pdb: PlominoDatabase
+    json: {"Form": <nome del form>,
+        "<nome del campo>": "<valore del campo>, <valore del campo>, ...",
+        "<nome del campo>_op": <operatore>}
+    operatori supportati: gt, lt, eq
+    """
+
+    query_info = json.loads(json)
+
+    frm_name = query_info.pop('Form')
+    frm = pdb.getForm(frm_name)
+
+    query = dict()
+    for optName, optValue in query_info.items():
+        if not optName.endwith('_op'):
+            fld = frm.getFormField(optName)
+            itemValues = [fld.processInput(v.strip(), None, False) \
+                for v in optValue.split(',')]
+            query[optName] = dict(query=itemValues)
+            op = query_info.get('%s_op' % optName)
+            if op and op_match.get(op):
+                if op == 'gt':
+                    query[optName]['range'] = 'min'
+                if op == 'lt':
+                    query[optName]['range'] = 'max'
+                if op in ('and', 'or'):
+                    query[optName]['operator'] = op
+    
+    return query
+
 def search_documents(self, start=1, limit=None, only_allowed=True,
     getObject=True, fulltext_query=None, sortindex=None, reverse=None,
     query_request={}):
@@ -64,7 +103,7 @@ def search_documents(self, start=1, limit=None, only_allowed=True,
         reverse = self.getReverseSorting()
     query = {'PlominoViewFormula_'+self.getViewName() : True}
     if isinstance(query_request, basestring):
-        query_request = json.loads(query_request)
+        query_request = query_layer(query_request)
     query.update(query_request)
     
     if fulltext_query:
@@ -138,3 +177,4 @@ def search_json(self, REQUEST=None, query_request={}):
 
 PlominoView.search_documents = search_documents
 PlominoView.search_json = search_json
+PlominoView.supported_query_operators = op_match
