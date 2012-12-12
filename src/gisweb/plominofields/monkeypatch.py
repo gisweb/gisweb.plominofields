@@ -52,7 +52,7 @@ op_match = {
     'gt':'Maggiore di',
     'lt':'Minore di',
     'and': 'AND',
-)
+}
 
 def query_layer(pdb, json):
     """
