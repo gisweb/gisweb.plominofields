@@ -2,6 +2,8 @@
 from Products.CMFPlomino.PlominoUtils import asUnicode, asList
 from jsonutil import jsonutil as json
 
+from plone.app.content.batching import Batch
+
 from Products.CMFPlomino.PlominoForm import PlominoForm
 from Products.CMFPlomino.PlominoView import PlominoView
 
@@ -52,21 +54,27 @@ op_match = {
     'gt':'Maggiore di',
     'lt':'Minore di',
     'and': 'AND',
+    'wi': 'Compreso tra'
 }
 
-def query_layer(pdb, **query_info):
+def qal(pdb, **query_info):
     """
+    Query Abstraction Layer
     pdb: PlominoDatabase
-    json: {"Form": <nome del form>,
+    query_info: {"Form": <nome del form>,
         "<nome del campo>": "<valore del campo>, <valore del campo>, ...",
         "<nome del campo>_op": <operatore>}
     operatori supportati: gt, lt, eq
     """
 
-    frm_name = query_info.pop('Form')
+    query = dict()
+    if not query_info:
+        return query
+    
+    frm_name = query_info['Form'] # if Form not in query_info I want error!
+    
     frm = pdb.getForm(frm_name)
 
-    query = dict()
     for optName, optValue in query_info.items():
         if not optName.endswith('_op'):
             fld = frm.getFormField(optName)
@@ -79,6 +87,8 @@ def query_layer(pdb, **query_info):
                     query[optName]['range'] = 'min'
                 if op == 'lt':
                     query[optName]['range'] = 'max'
+                if op == 'wi':
+                    query[optName]['range'] = 'minmax'
                 if op in ('and', 'or'):
                     query[optName]['operator'] = op
     
@@ -101,7 +111,10 @@ def search_documents(self, start=1, limit=None, only_allowed=True,
     if not reverse:
         reverse = self.getReverseSorting()
     query = {'PlominoViewFormula_'+self.getViewName() : True}
-    query_request = query_layer(pdb, **query_request)
+
+    total = len(index.dbSearch(query, only_allowed=only_allowed))
+    
+    query_request = qal(pdb, **query_request)
     query.update(query_request)
     
     if fulltext_query:
@@ -114,9 +127,9 @@ def search_documents(self, start=1, limit=None, only_allowed=True,
     if limit:
         results = Batch(items=results, pagesize=limit, pagenumber=int(start/limit)+1)
     if getObject:
-        return [r.getObject() for r in results]
+        return [r.getObject() for r in results], total
     else:
-        return results
+        return results, total
 
 def search_json(self, REQUEST=None):
     """ Returns a JSON representation of view filtered data
@@ -124,28 +137,27 @@ def search_json(self, REQUEST=None):
     data = []
     categorized = self.getCategorized()
     start = 1
-    limit = -1
     search = None
     sort_index = None
     reverse = 1
+    
     if REQUEST:
         start = int(REQUEST.get('iDisplayStart', 1))
-        iDisplayLength = REQUEST.get('iDisplayLength', None)
-        if iDisplayLength:
-            limit = int(iDisplayLength)
+        
+        limit = REQUEST.get('iDisplayLength')
+        limit = limit and int(limit)
+
         search = REQUEST.get('sSearch', '').lower()
         if search:
             search = " ".join([term+'*' for term in search.split(' ')])
         sort_column = REQUEST.get('iSortCol_0')
         if sort_column:
             sort_index = self.getIndexKey(self.getColumns()[int(sort_column)-1].id)
-        reverse = REQUEST.get('sSortDir_0', None) or 'asc'
+        reverse = REQUEST.get('sSortDir_0') or 'asc'
         if reverse=='desc':
             reverse = 0
         if reverse=='asc':
             reverse = 1 
-    if limit < 1:
-        limit = None
 
     indexes = self.getParentDatabase().getIndex().indexes()
     query_request = dict([(k,REQUEST.get(k)) for k in REQUEST.keys() \
@@ -165,14 +177,18 @@ def search_json(self, REQUEST=None):
         'bSortable',
     )])])
 
-    results = self.search_documents(start=start,
-                                   limit=limit,
+    results, total = self.search_documents(start=1,
+                                   limit=None,
                                    getObject=False,
                                    fulltext_query=search,
                                    sortindex=sort_index,
                                    reverse=reverse,
                                    query_request=query_request)
-    total = display_total = len(results)
+
+    if limit:
+        results = Batch(items=results, pagesize=limit, pagenumber=int(start/limit)+1)
+    display_total = len(results)
+
     columnids = [col.id for col in self.getColumns() if not getattr(col, 'HiddenColumn', False)]
     for b in results:
         row = [b.getPath().split('/')[-1]]
