@@ -101,8 +101,7 @@ def search_documents(self, start=1, limit=None, only_allowed=True,
     if not reverse:
         reverse = self.getReverseSorting()
     query = {'PlominoViewFormula_'+self.getViewName() : True}
-    if isinstance(query_request, basestring):
-        query_request = query_layer(pdb, **query_request)
+    query_request = query_layer(pdb, **query_request)
     query.update(query_request)
     
     if fulltext_query:
