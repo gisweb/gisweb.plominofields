@@ -54,7 +54,7 @@ op_match = {
     'and': 'AND',
 }
 
-def query_layer(pdb, json):
+def query_layer(pdb, **query_info):
     """
     pdb: PlominoDatabase
     json: {"Form": <nome del form>,
@@ -62,8 +62,6 @@ def query_layer(pdb, json):
         "<nome del campo>_op": <operatore>}
     operatori supportati: gt, lt, eq
     """
-
-    query_info = json.loads(json)
 
     frm_name = query_info.pop('Form')
     frm = pdb.getForm(frm_name)
@@ -92,7 +90,8 @@ def search_documents(self, start=1, limit=None, only_allowed=True,
     """
     Return all the documents matching the view and the custom filter criteria.
     """
-    index = self.getParentDatabase().getIndex()
+    pdb = self.getParentDatabase()
+    index = pdb.getIndex()
     if not sortindex:
         sortindex = self.getSortColumn()
         if sortindex=='':
@@ -103,7 +102,7 @@ def search_documents(self, start=1, limit=None, only_allowed=True,
         reverse = self.getReverseSorting()
     query = {'PlominoViewFormula_'+self.getViewName() : True}
     if isinstance(query_request, basestring):
-        query_request = query_layer(query_request)
+        query_request = query_layer(pdb, **query_request)
     query.update(query_request)
     
     if fulltext_query:
@@ -120,7 +119,7 @@ def search_documents(self, start=1, limit=None, only_allowed=True,
     else:
         return results
 
-def search_json(self, REQUEST=None, query_request={}):
+def search_json(self, REQUEST=None):
     """ Returns a JSON representation of view filtered data
     """
     data = []
@@ -148,6 +147,24 @@ def search_json(self, REQUEST=None, query_request={}):
             reverse = 1 
     if limit < 1:
         limit = None
+
+    query_request = dict([(k,REQUEST.get(k)) for k in REQUEST.keys() \
+        if REQUEST.get(k) and not any([k.startswith(pre) for pre in (
+        'sEcho', 
+        'iColumns',
+        'sColumns',
+        'iDisplayStart',
+        'iDisplayLength',
+        'mData',
+        'sSearch',
+        'bRegex',
+        'bSearchable',
+        'iSortCol',
+        'sSortDir',
+        'iSortingCols',
+        'bSortable',
+    )])
+
     results = self.search_documents(start=start,
                                    limit=limit,
                                    getObject=False,
