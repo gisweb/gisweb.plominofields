@@ -68,7 +68,7 @@ def query_layer(pdb, **query_info):
 
     query = dict()
     for optName, optValue in query_info.items():
-        if not optName.endwith('_op'):
+        if not optName.endswith('_op'):
             fld = frm.getFormField(optName)
             itemValues = [fld.processInput(v.strip(), None, False) \
                 for v in optValue.split(',')]
