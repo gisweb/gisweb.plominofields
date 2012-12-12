@@ -148,8 +148,9 @@ def search_json(self, REQUEST=None):
     if limit < 1:
         limit = None
 
+    indexes = self.getParentDatabase().getIndex().indexes()
     query_request = dict([(k,REQUEST.get(k)) for k in REQUEST.keys() \
-        if REQUEST.get(k) and not any([k.startswith(pre) for pre in (
+        if REQUEST.get(k) and k in indexes and not any([k.startswith(pre) for pre in (
         'sEcho', 
         'iColumns',
         'sColumns',
