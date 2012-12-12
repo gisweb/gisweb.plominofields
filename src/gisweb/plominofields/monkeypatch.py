@@ -112,7 +112,7 @@ def search_documents(self, start=1, limit=None, only_allowed=True,
         reverse = self.getReverseSorting()
     query = {'PlominoViewFormula_'+self.getViewName() : True}
 
-    total = len(index.dbSearch(query, only_allowed=only_allowed))
+    total = len(index.dbsearch(query, only_allowed=only_allowed))
     
     query_request = qal(pdb, **query_request)
     query.update(query_request)
