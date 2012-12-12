@@ -71,7 +71,7 @@ def qal(pdb, **query_info):
     if not query_info:
         return query
     
-    frm_name = query_info['Form'] # if Form not in query_info I want error!
+    frm_name = query_info.pop('Form') # if Form not in query_info I want error!
     
     frm = pdb.getForm(frm_name)
 
