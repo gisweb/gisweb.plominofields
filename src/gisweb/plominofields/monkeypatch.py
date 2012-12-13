@@ -51,48 +51,10 @@ PlominoForm.readInputs = readInputs
 
 # elenco degli opratori supportati in formato chiave, etichetta
 op_match = {
-    'gt':'Maggiore di',
-    'lt':'Minore di',
-    'and': 'AND',
+    'gt': 'Maggiore di',
+    'lt': 'Minore di',
     'wi': 'Compreso tra'
 }
-
-def qal(pdb, **query_info):
-    """
-    Query Abstraction Layer
-    pdb: PlominoDatabase
-    query_info: {"Form": <nome del form>,
-        "<nome del campo>": "<valore del campo>, <valore del campo>, ...",
-        "<nome del campo>_op": <operatore>}
-    operatori supportati: gt, lt, eq
-    """
-
-    query = dict()
-    if not query_info:
-        return query
-    
-    frm_name = query_info.pop('Form') # if Form not in query_info I want error!
-    
-    frm = pdb.getForm(frm_name)
-
-    for optName, optValue in query_info.items():
-        if not optName.endswith('_op'):
-            fld = frm.getFormField(optName)
-            itemValues = [fld.processInput(v.strip(), None, False) \
-                for v in optValue.split(',')]
-            query[optName] = dict(query=itemValues)
-            op = query_info.get('%s_op' % optName)
-            if op and op_match.get(op):
-                if op == 'gt':
-                    query[optName]['range'] = 'min'
-                if op == 'lt':
-                    query[optName]['range'] = 'max'
-                if op == 'wi':
-                    query[optName]['range'] = 'minmax'
-                if op in ('and', 'or'):
-                    query[optName]['operator'] = op
-    
-    return query
 
 def search_documents(self, start=1, limit=None, only_allowed=True,
     getObject=True, fulltext_query=None, sortindex=None, reverse=None,
@@ -113,10 +75,9 @@ def search_documents(self, start=1, limit=None, only_allowed=True,
     query = {'PlominoViewFormula_'+self.getViewName() : True}
 
     total = len(index.dbsearch(query, only_allowed=only_allowed))
-    
-    query_request = qal(pdb, **query_request)
+
     query.update(query_request)
-    
+
     if fulltext_query:
         query['SearchableText'] = fulltext_query
     results=index.dbsearch(
@@ -140,10 +101,10 @@ def search_json(self, REQUEST=None):
     search = None
     sort_index = None
     reverse = 1
-    
+
     if REQUEST:
         start = int(REQUEST.get('iDisplayStart', 1))
-        
+
         limit = REQUEST.get('iDisplayLength')
         limit = limit and int(limit)
 
@@ -157,25 +118,9 @@ def search_json(self, REQUEST=None):
         if reverse=='desc':
             reverse = 0
         if reverse=='asc':
-            reverse = 1 
+            reverse = 1
 
-    indexes = self.getParentDatabase().getIndex().indexes()
-    query_request = dict([(k,REQUEST.get(k)) for k in REQUEST.keys() \
-        if REQUEST.get(k) and k in indexes and not any([k.startswith(pre) for pre in (
-        'sEcho', 
-        'iColumns',
-        'sColumns',
-        'iDisplayStart',
-        'iDisplayLength',
-        'mData',
-        'sSearch',
-        'bRegex',
-        'bSearchable',
-        'iSortCol',
-        'sSortDir',
-        'iSortingCols',
-        'bSortable',
-    )])])
+    query_request = json.loads(REQUEST['query'])
 
     results, total = self.search_documents(start=1,
                                    limit=None,
