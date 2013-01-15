@@ -157,3 +157,19 @@ def search_json(self, REQUEST=None):
 PlominoView.search_documents = search_documents
 PlominoView.search_json = search_json
 PlominoView.supported_query_operators = op_match
+
+
+from persistent.dict import PersistentDict
+def TemporaryDocument__init__(self, parent, form, REQUEST, real_doc=None):
+    self._parent=parent
+    if real_doc is not None:
+        self.items=PersistentDict(real_doc.items)
+        self.real_id=real_doc.id
+    else:
+        self.items={}
+        self.real_id="TEMPDOC"
+    self.setItem('Form', form.getFormName())
+    form.readInputs(self, REQUEST)
+    self._REQUEST=REQUEST
+from Products.CMFPlomino.PlominoDocument import TemporaryDocument
+TemporaryDocument.__init__ = TemporaryDocument__init__
