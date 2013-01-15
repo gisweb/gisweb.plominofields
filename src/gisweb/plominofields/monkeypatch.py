@@ -15,7 +15,9 @@ from Products.CMFPlomino.config import READ_PERMISSION
 PlominoIndex.security = ClassSecurityInfo()
 PlominoIndex.security.declareProtected(READ_PERMISSION, 'search_json')
 PlominoIndex.security.declareProtected(READ_PERMISSION, 'search_documents')
+PlominoIndex.security.declareProtected(READ_PERMISSION, 'getFullLayout')
 InitializeClass(PlominoView)
+InitializeClass(PlominoForm)
 
 # NEW VERSION 1.13.3
 def readInputs(self, doc, REQUEST, process_attachments=False, applyhidewhen=True):
@@ -158,7 +160,6 @@ PlominoView.search_documents = search_documents
 PlominoView.search_json = search_json
 PlominoView.supported_query_operators = op_match
 
-
 from persistent.dict import PersistentDict
 def TemporaryDocument__init__(self, parent, form, REQUEST, real_doc=None):
     self._parent=parent
@@ -173,3 +174,9 @@ def TemporaryDocument__init__(self, parent, form, REQUEST, real_doc=None):
     self._REQUEST=REQUEST
 from Products.CMFPlomino.PlominoDocument import TemporaryDocument
 TemporaryDocument.__init__ = TemporaryDocument__init__
+
+
+def getFullLayout(self):
+    return self._get_html_content()
+
+PlominoForm.getFullLayout = getFullLayout
