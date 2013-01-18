@@ -108,8 +108,10 @@ def search_json(self, REQUEST=None):
         start = int(REQUEST.get('iDisplayStart', 1))
 
         limit = REQUEST.get('iDisplayLength')
+        limit = (limit and int(limit))
         # In case limit == -1 we want it to be None
-        limit = (limit and int(limit)) and None
+        if limit < 1:
+            limit = None
 
         search = REQUEST.get('sSearch', '').lower()
         if search:
