@@ -168,25 +168,6 @@ PlominoView.search_documents = search_documents
 PlominoView.search_json = search_json
 PlominoView.supported_query_operators = op_match
 
-from persistent.dict import PersistentDict
-def TemporaryDocument__init__(self, parent, form, REQUEST, real_doc=None, validation_mode=False):
-    self._parent=parent
-    if real_doc is not None:
-        self.items=PersistentDict(real_doc.items)  # This is the patched line (see commit 1ee022da)
-        self.real_id=real_doc.id
-    else:
-        self.items={}
-        self.real_id="TEMPDOC"
-    self.setItem('Form', form.getFormName())
-    # Try to be compatible across Plomino versions
-    try:
-        form.readInputs(self, REQUEST)
-    except TypeError:
-        form.readInputs(self, REQUEST, validation_mode=validation_mode)
-    self._REQUEST=REQUEST
-from Products.CMFPlomino.PlominoDocument import TemporaryDocument
-TemporaryDocument.__init__ = TemporaryDocument__init__
-
 
 def getFullLayout(self):
     return self._get_html_content()

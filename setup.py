@@ -35,6 +35,7 @@ setup(name='gisweb.plominofields',
       zip_safe=False,
       install_requires=[
           'setuptools',
+          'Products.CMFPlomino>=1.16.4',
           # -*- Extra requirements: -*-
       ],
       entry_points="""
