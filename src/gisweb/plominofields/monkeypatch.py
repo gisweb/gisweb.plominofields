@@ -2,7 +2,11 @@
 from Products.CMFPlomino.PlominoUtils import asUnicode, asList
 from jsonutil import jsonutil as json
 
+from dateutil.parser import parse as parse_date
+
 from plone.app.content.batching import Batch
+
+from Products.PluginIndexes.DateIndex.DateIndex import DateIndex
 
 from Products.CMFPlomino.PlominoForm import PlominoForm
 from Products.CMFPlomino.PlominoView import PlominoView
@@ -132,6 +136,22 @@ def search_json(self, REQUEST=None):
             reverse = 1
 
     query_request = json.loads(REQUEST['query'])
+    # Some fields might express a date
+    # We try to convert those strings to datetime
+    indexes = self.aq_parent.aq_base.plomino_index.Indexes
+    for key, value in query_request.iteritems():
+        if key in indexes:
+            index = indexes[key]
+            # This is lame: we should check if it quacks, not
+            # if it's a duck!
+            # XXX Use a more robust method to tell apart
+            # date indexes from non-dates
+            if isinstance(index, DateIndex):
+                # convert value(s) to date(s)
+                if isinstance(value, basestring):
+                    query_request[key] = parse_date(value)
+                else:
+                    value['query'] = parse_date(value['query'])
 
     results, total = self.search_documents(start=1,
                                    limit=None,
