@@ -138,7 +138,8 @@ def search_json(self, REQUEST=None):
     query_request = json.loads(REQUEST['query'])
     # Some fields might express a date
     # We try to convert those strings to datetime
-    indexes = self.aq_parent.aq_base.plomino_index.Indexes
+    #indexes = self.aq_parent.aq_base.plomino_index.Indexes
+    indexes = self.getParentDatabase().getIndex().Indexes
     for key, value in query_request.iteritems():
         if key in indexes:
             index = indexes[key]
@@ -146,6 +147,8 @@ def search_json(self, REQUEST=None):
             # if it's a duck!
             # XXX Use a more robust method to tell apart
             # date indexes from non-dates
+
+            # I'd use a solution like this one: http://getpython3.com/diveintopython3/examples/customserializer.py
             if isinstance(index, DateIndex):
                 # convert value(s) to date(s)
                 if isinstance(value, basestring):
