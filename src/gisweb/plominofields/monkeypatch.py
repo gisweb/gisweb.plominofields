@@ -4,7 +4,12 @@ from jsonutil import jsonutil as json
 
 from dateutil.parser import parse as parse_date
 
-from plone.app.content.batching import Batch
+try:
+    from plone.app.content.batching import Batch # Plone < 4.3
+    HAS_PLONE43 = False
+except ImportError:
+    from plone.batching import Batch # Plone >= 4.3
+    HAS_PLONE43 = True
 
 from Products.PluginIndexes.DateIndex.DateIndex import DateIndex
 
@@ -98,7 +103,10 @@ def search_documents(self, start=1, limit=None, only_allowed=True,
         reverse=reverse,
         only_allowed=only_allowed) # di fatto questo parametro NON viene usato dal metodo dbsearch
     if limit:
-        results = Batch(items=results, pagesize=limit, pagenumber=int(start/limit)+1)
+        if HAS_PLONE43:
+            results = Batch(items=results, size=limit, start=int(start/limit)+1)*limit
+        else:
+            results = Batch(items=results, pagesize=limit, pagenumber=int(start/limit)+1)
     if getObject:
         return [r.getObject() for r in results], total
     else:
@@ -165,7 +173,10 @@ def search_json(self, REQUEST=None):
                                    query_request=query_request)
 
     if limit:
-        results = Batch(items=results, pagesize=limit, pagenumber=int(start/limit)+1)
+        if HAS_PLONE43:
+            results = Batch(items=results, size=limit, start=int(start/limit)+1)*limit
+        else:
+            results = Batch(items=results, pagesize=limit, pagenumber=int(start/limit)+1)
     display_total = len(results)
 
     columnids = [col.id for col in self.getColumns() if not getattr(col, 'HiddenColumn', False)]
