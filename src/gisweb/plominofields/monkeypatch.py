@@ -79,8 +79,7 @@ def search_documents(self, start=1, limit=None, only_allowed=True,
     """
     Return all the documents matching the view and the custom filter criteria.
     """
-    pdb = self.getParentDatabase()
-    index = pdb.getIndex()
+    index = self.getParentDatabase().getIndex()
     if not sortindex:
         sortindex = self.getSortColumn()
         if sortindex=='':
