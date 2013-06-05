@@ -161,7 +161,10 @@ def search_json(self, REQUEST=None):
                 if isinstance(value, basestring):
                     query_request[key] = parse_date(value)
                 else:
-                    value['query'] = parse_date(value['query'])
+                    if isinstance(value['query'], basestring):
+                        value['query'] = parse_date(value['query'])
+                    else:
+                        query_request[key]['query'] = [parse_date(v) for v in value['query']]
 
     results, total = self.search_documents(start=1,
                                    limit=None,
