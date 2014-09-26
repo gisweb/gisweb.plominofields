@@ -2,37 +2,4 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            xmlns:five="http://namespaces.zope.org/five"
            i18n_domain="CMFPlomino">
-   <adapter
-        for="Products.CMFPlomino.interfaces.IPlominoField"
-        provides=".date.IDateField"
-        factory=".date.DateField"
-        />
-   <browser:page
-        name="datesettings"
-        for="Products.CMFPlomino.interfaces.IPlominoField"
-        class=".date.SettingForm"
-        permission="plomino.DESIGN_PERMISSION"
-        />
-   <adapter
-        for="Products.CMFPlomino.interfaces.IPlominoField"
-        provides=".mappa.IMappaField"
-        factory=".mappa.MappaField"
-        />
-   <browser:page
-        name="mappasettings"
-        for="Products.CMFPlomino.interfaces.IPlominoField"
-        class=".mappa.SettingForm"
-        permission="plomino.DESIGN_PERMISSION"
-        />
-   <adapter
-        for="Products.CMFPlomino.interfaces.IPlominoField"
-        provides=".autosuggest.IAutoSuggestField"
-        factory=".autosuggest.AutoSuggestField"
-        />
-   <browser:page
-        name="autosuggestsettings"
-        for="Products.CMFPlomino.interfaces.IPlominoField"
-        class=".autosuggest.SettingForm"
-        permission="plomino.DESIGN_PERMISSION"
-        />
 </configure>
